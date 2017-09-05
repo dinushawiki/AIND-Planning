@@ -175,7 +175,25 @@ class AirCargoProblem(Problem):
         :return: resulting state after action
         """
         # TODO implement
+        old_state = decode_state(state, self.state_map)
         new_state = FluentState([], [])
+       
+        """Performing the action move action.effect_add to new_state.pos 
+        and action.effect_rem to new_state.neg."""
+        for fluent in old_state.pos:
+            if fluent not in action.effect_rem:
+                new_state.pos.append(fluent)
+        for fluent in old_state.neg:
+            if fluent not in action.effect_add:
+                new_state.neg.append(fluent)
+                
+        for fluent in action.effect_add:
+            if fluent not in new_state.pos:
+                new_state.pos.append(fluent)
+        for fluent in action.effect_rem:
+            if fluent not in new_state.neg:
+                new_state.neg.append(fluent)
+        
         return encode_state(new_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:
@@ -216,7 +234,13 @@ class AirCargoProblem(Problem):
         executed.
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
+        kb = PropKB()
+        kb.tell(decode_state(node.state, self.state_map).pos_sentence())
+        print(self.goal)
         count = 0
+        for clause in self.goal:
+            if clause not in kb.clauses:
+                count += 1
         return count
 
 
@@ -247,6 +271,14 @@ def air_cargo_p1() -> AirCargoProblem:
 
 def air_cargo_p2() -> AirCargoProblem:
     # TODO implement Problem 2 definition
+    cargos = ['C1', 'C2','C3']
+    planes = ['P1', 'P2','P3']
+    airports = ['JFK', 'SFO','ATL']
+    pos = [expr('At(C1, SFO)'),
+           expr('At(C2, JFK)'),
+           expr('At(P1, SFO)'),
+           expr('At(P2, JFK)'),
+           ]
     pass
 
 
@@ -254,6 +286,4 @@ def air_cargo_p3() -> AirCargoProblem:
     # TODO implement Problem 3 definition
     pass
 
-out = air_cargo_p1()
-result = out.get_actions()
 
