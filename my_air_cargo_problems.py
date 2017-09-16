@@ -91,14 +91,14 @@ class AirCargoProblem(Problem):
                 for plane in self.planes:
                     for airport in self.airports:
                         precond_pos = [
-                            expr("At({}, {})".format(cargo, plane)),
+                            expr("In({}, {})".format(cargo, plane)),
                             expr("At({}, {})".format(plane, airport))
                         ]
                         precond_neg = []
-                        effect_add = [expr("In({}, {})".format(cargo, airport))]
-                        effect_rem = [expr("At({}, {})".format(cargo, plane))]
+                        effect_add = [expr("At({}, {})".format(cargo, airport))]
+                        effect_rem = [expr("In({}, {})".format(cargo, plane))]
                         unload = Action(
-                            expr("Load({}, {}, {})".format(cargo, plane, airport)),
+                            expr("Unload({}, {}, {})".format(cargo, plane, airport)),
                             [precond_pos, precond_neg],
                             [effect_add, effect_rem]
                          )
@@ -236,7 +236,6 @@ class AirCargoProblem(Problem):
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
         kb = PropKB()
         kb.tell(decode_state(node.state, self.state_map).pos_sentence())
-        print(self.goal)
         count = 0
         for clause in self.goal:
             if clause not in kb.clauses:
